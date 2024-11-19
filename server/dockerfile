@@ -1,0 +1,12 @@
+FROM golang:1.23.2
+
+WORKDIR /app
+COPY go.mod ./
+COPY ./server ./server
+
+RUN go mod tidy
+RUN go build -o main ./server/main.go
+
+CMD ["./main", "${SERVER_PORT}"]
+
+

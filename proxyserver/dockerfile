@@ -1,0 +1,11 @@
+FROM golang:1.23.2
+
+WORKDIR /app
+COPY go.mod ./
+COPY ./proxyserver ./proxyserver
+
+RUN go mod tidy
+RUN go build -o proxy ./proxyserver/proxy.go
+
+CMD ["./proxy", "${PROXY_PORT}"]
+

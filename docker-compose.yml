@@ -1,0 +1,31 @@
+services:
+  proxy:
+    build:
+      context: .
+      dockerfile: ./proxyserver/Dockerfile
+    ports:
+      - "${PROXY_PORT:-8081}:${PROXY_PORT:-8081}" # Använder dynamiska värden för både värd- och containerport
+    environment:
+      - PROXY_PORT=${PROXY_PORT:-8081}
+      - TARGET_ADDRESS=server:${SERVER_PORT:-8080} # Skicka dynamiska serverporten till proxyn
+    depends_on:
+      - server
+    networks:
+      - proxy_network
+
+  server:
+    build:
+      context: .
+      dockerfile: ./server/Dockerfile
+    ports:
+      - "${SERVER_PORT:-8080}:${SERVER_PORT:-8080}" # Använder dynamiska värden för både värd- och containerport
+    environment:
+      - SERVER_PORT=${SERVER_PORT:-8080}
+    volumes:
+      - ./uploads:/app/uploads
+    networks:
+      - proxy_network
+
+networks:
+  proxy_network:
+    driver: bridge
